@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distrito Information Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .section {
+            margin-bottom: 20px;
+            cursor: pointer;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .section:hover {
+            background-color: #f0f0f0;
+        }
+        .hidden {
+            display: none;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        #loading {
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .error {
+            color: red;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Distrito Information Portal</h1>
+    <div id="loading">Loading data...</div>
+    <div id="error" class="error"></div>
+    <div id="distritos-container"></div>
+
+    <script>
+        let distritoData = [];
+
+        // Fetch data from the server
+        async function fetchDistritos() {
+            try {
+                const response = await fetch('/api/distritos');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                distritoData = await response.json();
+                
+                document.getElementById('loading').style.display = 'none';
+                renderDistritos();
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').textContent = 
+                    `Error loading data: ${error.message}`;
+            }
+        }
+
+        // Group data by districts
+        function groupByDistritos(data) {
+            return data.reduce((acc, item) => {
+                if (!acc[item.district]) {
+                    acc[item.district] = [];
+                }
+                acc[item.district].push(item);
+                return acc;
+            }, {});
+        }
+
+        // Render Distritos
+        function renderDistritos() {
+            const container = document.getElementById('distritos-container');
+            container.innerHTML = '';
+
+            const districtMap = groupByDistritos(distritoData);
+
+            Object.keys(districtMap).forEach(distrito => {
+                const distritoElement = document.createElement('div');
+                distritoElement.classList.add('section', 'distrito');
+                distritoElement.textContent = distrito;
+                distritoElement.onclick = () => showCompanies(distrito);
+                container.appendChild(distritoElement);
+            });
+        }
+
+        // Show Companies for a Distrito
+        function showCompanies(distrito) {
+            const container = document.getElementById('distritos-container');
+            container.innerHTML = '';
+
+            const backButton = document.createElement('button');
+            backButton.textContent = 'Back to Distritos';
+            backButton.onclick = renderDistritos;
+            container.appendChild(backButton);
+
+            const distritoTitle = document.createElement('h2');
+            distritoTitle.textContent = distrito;
+            container.appendChild(distritoTitle);
+
+            const districtMap = groupByDistritos(distritoData);
+
+            districtMap[distrito].forEach(company => {
+                const companyElement = document.createElement('div');
+                companyElement.classList.add('section', 'company');
+                companyElement.textContent = company.company;
+                companyElement.onclick = () => showParticipants(company);
+                container.appendChild(companyElement);
+            });
+        }
+
+        // Show Participants for a Company
+        function showParticipants(company) {
+            const container = document.getElementById('distritos-container');
+            container.innerHTML = '';
+
+            const backButton = document.createElement('button');
+            backButton.textContent = 'Back to Companies';
+            backButton.onclick = () => showCompanies(company.district);
+            container.appendChild(backButton);
+
+            const companyTitle = document.createElement('h2');
+            companyTitle.textContent = company.company;
+            container.appendChild(companyTitle);
+
+            const participantsList = document.createElement('div');
+            company.participants.forEach(participant => {
+                const participantElement = document.createElement('div');
+                participantElement.classList.add('section');
+                participantElement.textContent = participant;
+                participantsList.appendChild(participantElement);
+            });
+            container.appendChild(participantsList);
+        }
+
+        // Initial fetch
+        fetchDistritos();
+    </script>
+</body>
+</html>
