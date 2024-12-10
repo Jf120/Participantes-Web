@@ -43,7 +43,9 @@
         }
         #loading {
             text-align: center;
-            font-size: 1.2em;
+            font-size: 1.5em;
+            color: white;
+            margin: 20px 0;
         }
         .error {
             color: red;
@@ -120,6 +122,40 @@
             font-weight: bold;
             text-transform: capitalize;
         }
+
+        /* Loading Spinner Base Styles */
+        .loading-spinner {
+            display: none;
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Activate spinner when 'is-loading' class is added */
+        .is-loading .loading-spinner {
+            display: inline-block;
+        }
+
+        /* Spin animation keyframes */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Optional: Dimming background when loading */
+        .is-loading::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
@@ -141,11 +177,25 @@
             <button class="section distrito" onclick="showCompanies('Distrito 8')">Distrito 8</button>
         </div>
     </div>
+    <!-- <div id="loading" class="hidden">Cargando...</div> -->
+    <div id="container" style="text-align: center;">
+        <div class="loading-spinner" style="margin: 0 auto;"></div>
+        <div id="content">
+            <!-- Your page content goes here -->
+        </div>
+    </div>
 
     <script>
         // Show Companies for a Distrito
         async function showCompanies(distrito) {
             const container = document.getElementById('distritos-container');
+            // const loading = document.getElementById('loading');
+            
+            // Show loading spinner
+            // loading.classList.remove('hidden');
+
+            document.getElementById('container').classList.toggle('is-loading');
+            
             container.innerHTML = '';
 
             const backButton = document.createElement('button');
@@ -172,6 +222,10 @@
             } catch (error) {
                 document.getElementById('error').textContent = 
                     `Error loading companies: ${error.message}`;
+            } finally {
+                // Hide loading spinner
+                // loading.classList.add('hidden');
+                document.getElementById('container').classList.remove('is-loading');
             }
         }
 
