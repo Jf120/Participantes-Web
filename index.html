@@ -36,49 +36,55 @@
             color: red;
             text-align: center;
         }
+        .distrito-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .distrito {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .distrito:hover {
+            background-color: #e9ecef;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px 0;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
     <h1>Distrito Information Portal</h1>
-    <div id="loading">Loading data...</div>
     <div id="error" class="error"></div>
-    <div id="distritos-container"></div>
+    <div id="distritos-container">
+        <!-- Hardcoded distrito buttons -->
+        <div class="distrito-buttons">
+            <button class="section distrito" onclick="showCompanies('Distrito1')">Distrito 1</button>
+            <button class="section distrito" onclick="showCompanies('Distrito2')">Distrito 2</button>
+            <button class="section distrito" onclick="showCompanies('Distrito3')">Distrito 3</button>
+            <button class="section distrito" onclick="showCompanies('Distrito4')">Distrito 4</button>
+            <button class="section distrito" onclick="showCompanies('Distrito5')">Distrito 5</button>
+            <button class="section distrito" onclick="showCompanies('Distrito6')">Distrito 6</button>
+            <button class="section distrito" onclick="showCompanies('Distrito7')">Distrito 7</button>
+            <button class="section distrito" onclick="showCompanies('Distrito8')">Distrito 8</button>
+        </div>
+    </div>
 
     <script>
-        let distritoData = [];
-
-        // Fetch data from the server
-        async function fetchDistritos() {
-            try {
-                const response = await fetch('/api/distritos/unique');
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                distritoData = await response.json();
-                
-                document.getElementById('loading').style.display = 'none';
-                renderDistritos();
-            } catch (error) {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('error').textContent = 
-                    `Error loading data: ${error.message}`;
-            }
-        }
-
-        // Render Distritos (simplified as we're getting district names directly)
-        function renderDistritos() {
-            const container = document.getElementById('distritos-container');
-            container.innerHTML = '';
-
-            distritoData.forEach(distrito => {
-                const distritoElement = document.createElement('div');
-                distritoElement.classList.add('section', 'distrito');
-                distritoElement.textContent = distrito;
-                distritoElement.onclick = () => showCompanies(distrito);
-                container.appendChild(distritoElement);
-            });
-        }
-
         // Show Companies for a Distrito
         async function showCompanies(distrito) {
             const container = document.getElementById('distritos-container');
@@ -86,7 +92,7 @@
 
             const backButton = document.createElement('button');
             backButton.textContent = 'Back to Distritos';
-            backButton.onclick = renderDistritos;
+            backButton.onclick = () => window.location.reload(); // Simple reload to show districts again
             container.appendChild(backButton);
 
             const distritoTitle = document.createElement('h2');
@@ -143,9 +149,6 @@
                     `Error loading participants: ${error.message}`;
             }
         }
-
-        // Initial fetch
-        fetchDistritos();
     </script>
 </body>
 </html>
