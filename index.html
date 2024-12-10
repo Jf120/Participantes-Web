@@ -11,6 +11,7 @@
             margin: 0 auto;
             padding: 20px;
             line-height: 1.6;
+            background-color: #003057;
         }
         .section {
             margin-bottom: 20px;
@@ -25,9 +26,19 @@
         .hidden {
             display: none;
         }
+        .title {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            margin-bottom: 20px;
+        }
+
         h1, h2, h3 {
-            color: #333;
+            color: white;
             text-align: center;
+        }
+
+        h1 {
+            margin: auto 0;
         }
         #loading {
             text-align: center;
@@ -44,7 +55,7 @@
             margin-bottom: 20px;
         }
         .distrito {
-            background-color: #007bff;
+            background-color: #f68d2e;
             border: 1px solid black;
             padding: 15px;
             border-radius: 5px;
@@ -59,33 +70,34 @@
         }
 
         .company {
-            background-color: #007bff;
+            background-color: #f68d2e;
             border: 1px solid black;
             padding: 15px;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
             color: black;
-            font-size: medium;
+            font-weight: bold;
         }
         button {
             padding: 10px 20px;
             margin: 10px 0;
             cursor: pointer;
-            background-color: #007bff;
+            background-color: #800543;
             color: white;
             border: none;
             border-radius: 5px;
             text-align: center;
         }
         button:hover {
-            background-color: #0056b3;
+            background-color: #800543ce;
         }
         .participant-button {
             width: 100%;
             text-align: left;
             margin: 5px 0;
             transition: background-color 0.3s;
+            padding: 15px;
         }
 
         .participant-button.present {
@@ -94,7 +106,7 @@
         }
 
         .participant-button.regular {
-            background-color: #007bff;
+            background-color: #800543;
             color: white;
         }
 
@@ -110,7 +122,10 @@
     </style>
 </head>
 <body>
-    <h1>Marcador de Asistencia</h1>
+    <div class="title">
+        <img src="assets/LogoPFJ.svg" alt="Logo PFJ" style="width: 100px">
+        <h1 style="text-align: left;">Marcador de Asistencia</h1>
+    </div>
     <div id="error" class="error"></div>
     <div id="distritos-container">
         <!-- Hardcoded distrito buttons -->
