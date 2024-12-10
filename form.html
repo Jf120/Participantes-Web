@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Nuevo Participante</title>
+    <link rel="icon" type="image/x-icon" href="assets/LogoPFJ.ico">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: #003057;
+            color: white;
+        }
+        h1, h2 {
+            text-align: center;
+            color: white;
+        }
+        form {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            color: black;
+            margin-top: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #cancel-button {
+            background-color: #f68d2e;
+            color: black;
+        }
+        #cancel-button:hover {
+            background-color: #e67e22;
+        }
+    </style>
+</head>
+<body>
+    <h1>Agregar Nuevo Participante</h1>
+    <h2>Complete los detalles a continuación</h2>
+
+    <div id="add-participant-container">
+        <form id="add-participant-form">
+            <label for="district">Distrito:</label>
+            <input type="text" id="district" name="district" required placeholder="Ingrese el nombre del distrito">
+
+            <label for="company">Compañía:</label>
+            <input type="text" id="company" name="company" required placeholder="Ingrese el nombre de la compañía">
+
+            <label for="name">Nombre del Participante:</label>
+            <input type="text" id="name" name="name" required placeholder="Ingrese el nombre completo del participante">
+
+            <button type="submit">Agregar Participante</button>
+            <button type="button" id="cancel-button" onclick="cancelForm()">Cancelar</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('add-participant-form').addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const district = document.getElementById('district').value.trim();
+            const company = document.getElementById('company').value.trim();
+            const name = document.getElementById('name').value.trim();
+
+            try {
+                const response = await fetch(`/api/distritos/${district}/companies/${company}/participants`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name })
+                });
+
+                if (response.ok) {
+                    alert(`Participante "${name}" agregado exitosamente.`);
+                    document.getElementById('add-participant-form').reset();
+                } else {
+                    const errorData = await response.json();
+                    alert(`Error al agregar participante: ${errorData.error}`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Hubo un error al agregar el participante.');
+            }
+        });
+
+        function cancelForm() {
+            if (confirm('¿Estás seguro de que deseas cancelar?')) {
+                document.getElementById('add-participant-form').reset();
+            }
+        }
+    </script>
+</body>
+</html>
