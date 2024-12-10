@@ -282,20 +282,25 @@
         }
 
         async function checkAttendance(distrito, company, participant, date, buttonElement) {
-            try {
-                const response = await fetch(`https://participantes-api.onrender.com/api/attendance/${distrito}/${company}/${participant}/${date}`);
-                if (response.ok) {
-                    const { present } = await response.json();
-                    if (present) {
-                        buttonElement.classList.add('present');
-                    } else {
-                        buttonElement.classList.remove('present');
-                    }
-                }
-            } catch (error) {
-                console.error('Error checking attendance:', error);
+    try {
+        const response = await fetch(`https://participantes-api.onrender.com/api/attendance/${distrito}/${company}/${participant}/${date}`);
+        if (response.ok) {
+            const { present } = await response.json();
+            if (present) {
+                buttonElement.classList.add('present');
+                buttonElement.classList.remove('regular');
+            } else {
+                buttonElement.classList.add('regular');
+                buttonElement.classList.remove('present');
             }
+        } else {
+            buttonElement.classList.add('regular');
+            buttonElement.classList.remove('present');
         }
+    } catch (error) {
+        console.error('Error checking attendance:', error);
+    }
+}
     </script>
 </body>
 </html>
