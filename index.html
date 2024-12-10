@@ -50,7 +50,7 @@
         // Fetch data from the server
         async function fetchDistritos() {
             try {
-                const response = await fetch('/api/distritos');
+                const response = await fetch('/api/distritos/unique');
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -65,25 +65,12 @@
             }
         }
 
-        // Group data by districts
-        function groupByDistritos(data) {
-            return data.reduce((acc, item) => {
-                if (!acc[item.district]) {
-                    acc[item.district] = [];
-                }
-                acc[item.district].push(item);
-                return acc;
-            }, {});
-        }
-
-        // Render Distritos
+        // Render Distritos (simplified as we're getting district names directly)
         function renderDistritos() {
             const container = document.getElementById('distritos-container');
             container.innerHTML = '';
 
-            const districtMap = groupByDistritos(distritoData);
-
-            Object.keys(districtMap).forEach(distrito => {
+            distritoData.forEach(distrito => {
                 const distritoElement = document.createElement('div');
                 distritoElement.classList.add('section', 'distrito');
                 distritoElement.textContent = distrito;
@@ -93,7 +80,7 @@
         }
 
         // Show Companies for a Distrito
-        function showCompanies(distrito) {
+        async function showCompanies(distrito) {
             const container = document.getElementById('distritos-container');
             container.innerHTML = '';
 
@@ -106,39 +93,55 @@
             distritoTitle.textContent = distrito;
             container.appendChild(distritoTitle);
 
-            const districtMap = groupByDistritos(distritoData);
+            try {
+                const response = await fetch(`/api/distritos/${distrito}/companies`);
+                if (!response.ok) throw new Error('Failed to fetch companies');
+                const companies = await response.json();
 
-            districtMap[distrito].forEach(company => {
-                const companyElement = document.createElement('div');
-                companyElement.classList.add('section', 'company');
-                companyElement.textContent = company.company;
-                companyElement.onclick = () => showParticipants(company);
-                container.appendChild(companyElement);
-            });
+                companies.forEach(companyName => {
+                    const companyElement = document.createElement('div');
+                    companyElement.classList.add('section', 'company');
+                    companyElement.textContent = companyName;
+                    companyElement.onclick = () => showParticipants(distrito, companyName);
+                    container.appendChild(companyElement);
+                });
+            } catch (error) {
+                document.getElementById('error').textContent = 
+                    `Error loading companies: ${error.message}`;
+            }
         }
 
         // Show Participants for a Company
-        function showParticipants(company) {
+        async function showParticipants(distrito, companyName) {
             const container = document.getElementById('distritos-container');
             container.innerHTML = '';
 
             const backButton = document.createElement('button');
             backButton.textContent = 'Back to Companies';
-            backButton.onclick = () => showCompanies(company.district);
+            backButton.onclick = () => showCompanies(distrito);
             container.appendChild(backButton);
 
             const companyTitle = document.createElement('h2');
-            companyTitle.textContent = company.company;
+            companyTitle.textContent = companyName;
             container.appendChild(companyTitle);
 
-            const participantsList = document.createElement('div');
-            company.participants.forEach(participant => {
-                const participantElement = document.createElement('div');
-                participantElement.classList.add('section');
-                participantElement.textContent = participant;
-                participantsList.appendChild(participantElement);
-            });
-            container.appendChild(participantsList);
+            try {
+                const response = await fetch(`/api/distritos/${distrito}/companies/${companyName}/participants`);
+                if (!response.ok) throw new Error('Failed to fetch participants');
+                const participants = await response.json();
+
+                const participantsList = document.createElement('div');
+                participants.forEach(participant => {
+                    const participantElement = document.createElement('div');
+                    participantElement.classList.add('section');
+                    participantElement.textContent = participant;
+                    participantsList.appendChild(participantElement);
+                });
+                container.appendChild(participantsList);
+            } catch (error) {
+                document.getElementById('error').textContent = 
+                    `Error loading participants: ${error.message}`;
+            }
         }
 
         // Initial fetch
